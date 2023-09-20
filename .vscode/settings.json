@@ -1,0 +1,25 @@
+{
+  "javascript.validate.enable": true,
+  "npm.autoDetect": "on",
+  "git.inputValidationLength": 1000,
+  "git.inputValidationSubjectLength": 100,
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "eslint.workingDirectories": [{ "pattern": "apps/*/" }, { "pattern": "packages/*/" }],
+  "files.watcherExclude": {
+    ".git": true,
+    "node_modules": true
+  },
+  "tailwindCSS.experimental.classRegex": [["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]],
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "typescript.validate.enable": true,
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.suggest.completeFunctionCalls": true,
+  "typescript.surveys.enabled": false,
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "@types/node/process.d.ts" // we want to import env from from ~/src/env.cjs instead
+  ]
+}
