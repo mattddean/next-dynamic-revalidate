@@ -11,9 +11,9 @@ I hope that this type of functionality might one day work out of the box in next
 ## Here's how it works
 
 1. We use a [modified version of unstable_cache](./src/lib/caching/our-unstable-cache.ts) to, like normal, decide whether or not a particular cache entry is stale, but instead of immediately revalidating the data while the user waits, we make a request to /api/async-revalidate.
-1. [async-revalidate](./src/pages/api/async-revalidate.ts) responds immediately, but uses waitUntil to revalidate the data cache.
+1. [async-revalidate](./src/pages/api/async-revalidate.ts) responds immediately, but uses [waitUntil](https://nextjs.org/docs/pages/api-reference/functions/next-server#nextfetchevent) to revalidate the data cache in the background.
 
 This process could be simplified if either:
 
 1. This behavior came out of the box with nextjs, or
-1. waitUntil was exposed as a function which accepts a promise-returning callback and could be used in the App Router.
+1. `waitUntil` worked in the App Router, ideally exposed as an importable function such that an extra api request is not necessary.
