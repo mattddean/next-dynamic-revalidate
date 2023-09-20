@@ -1,6 +1,9 @@
 import Image from 'next/image'
 import { DEFAULT_REVALIDATE, nextCache } from '~/lib/caching/next-cache'
 
+export const runtime = 'edge'
+export const fetchCache = 'force-no-store'
+
 export default async function Home() {
   const pageResult = await nextCache({
     uniqueFnId: '/page:fetchPage',
