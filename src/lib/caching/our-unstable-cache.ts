@@ -16,6 +16,13 @@ const CACHE_ONE_YEAR = 31_536_000
 
 type Callback = (...args: any[]) => Promise<any>
 
+/**
+ * A copied and modified version of next.js's unstable_cache which enables stale-while-revalidate time-based revalidation on dynamic routes.
+ * Instead of making the user wait while we fetch new data for the cache, we make a request to /api/async-revalidate, requesting a revalidation.
+ * async-revalidate responds immediately, then performs the revalidation in the background.
+ *
+ * @see https://github.com/vercel/next.js/blob/2cf5d3a8aa325f8bece1094c9e566311e604e114/packages/next/src/server/web/spec-extension/unstable-cache.ts
+ */
 export function our_unstable_cache<T extends Callback>(
   cb: T,
   keyParts?: string[],
@@ -126,8 +133,8 @@ export function our_unstable_cache<T extends Callback>(
          * refetching and updating the data on this cache key in the background
          */
         const requestAsyncRevalidation = async () => {
-          // const label = `requesting async revalidation for ${options.uniqueFnId} on key ${cacheKey}`
-          // prodConsole.time(label)
+          const label = `requesting async revalidation for ${options.uniqueFnId} on key ${cacheKey}, args: ${args}`
+          console.time(label)
 
           const field: RevalidateField = {
             args,
@@ -147,7 +154,7 @@ export function our_unstable_cache<T extends Callback>(
             cache: 'no-store',
           })
 
-          // prodConsole.timeEnd(label)
+          console.timeEnd(label)
         }
 
         if (!cacheEntry || !cacheEntry.value) {
@@ -182,9 +189,11 @@ export function our_unstable_cache<T extends Callback>(
             store.pendingRevalidates.push(
               requestAsyncRevalidation()
                 .then(() => {
-                  // console.debug(`finished requesting async revalidation for ${cacheKey} on ${options.uniqueFnId}`)
+                  console.debug(`finished requesting async revalidation for ${cacheKey} on ${options.uniqueFnId}, args: ${args}`)
                 })
-                .catch((err) => console.error(`failed requesting async revalidation for key: ${cacheKey} on ${options.uniqueFnId}`, err)),
+                .catch((err) =>
+                  console.error(`failed requesting async revalidation for key: ${cacheKey} on ${options.uniqueFnId}, args: ${args}`, err),
+                ),
             )
           }
         } else if (tags && !tags.every((tag) => currentTags?.includes(tag))) {
@@ -199,9 +208,9 @@ export function our_unstable_cache<T extends Callback>(
           }
           // this was previously not awaited, not sure why
           await incrementalCache?.set(cacheKey, cacheEntry.value, options.revalidate, true)
-          // console.debug(`synchronously setting incremental cache for ${cacheKey} on ${options.uniqueFnId}`)
+          console.warn(`synchronously setting incremental cache for ${cacheKey} on ${options.uniqueFnId}`)
         }
-        // console.debug('returning cached value for %s on key', options.uniqueFnId, cacheKey)
+        console.debug(`returning cached value for ${options.uniqueFnId} on key ${cacheKey}`)
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return cachedValue
       },

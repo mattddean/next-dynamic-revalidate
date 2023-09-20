@@ -48,13 +48,14 @@ const invokeCallback = async (options: RevalidateField) => {
       options.revalidate,
       true,
     )
-    console.debug('async-revalidate: finished setting cache for %s on key %s, args:', options.uniqueFnId, cacheKey, args)
+    console.debug(`async-revalidate: finished setting cache for ${options.uniqueFnId} on key ${cacheKey}, args: ${args}`)
   }
 
   return result
 }
 
 /**
+ * Respond immediately, but stay alive until finished revalidating the given cache key.
  * This route is necessary because waitUntil is not supported in the app router yet.
  * https://github.com/vercel/next.js/issues/50522
  */
